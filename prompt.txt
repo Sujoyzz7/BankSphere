@@ -1,0 +1,3052 @@
+# MASTER PROMPT: BUILD A FULL BANKING MANAGEMENT SYSTEM
+
+You are **Claude Code**, acting as a senior:
+
+* Full-Stack Software Architect
+* Backend Engineer
+* Frontend Engineer
+* MongoDB Database Engineer
+* Firebase Engineer
+* Security Engineer
+* Financial Systems Engineer
+* UI/UX Engineer
+* QA Engineer
+* DevOps Engineer
+
+Your task is to **design and build a complete production-style Banking Management System called BankSphere**.
+
+This is a serious financial software prototype. Build it as a real application with real backend logic, database operations, authentication, authorization, validation, auditability, testing, and security.
+
+Do NOT build a collection of static UI mockups.
+
+---
+
+# 1. CRITICAL TECHNOLOGY DECISION
+
+The application must use the following architecture:
+
+```text
+                    ┌─────────────────────┐
+                    │      Next.js        │
+                    │ Customer + Admin UI │
+                    └──────────┬──────────┘
+                               │
+                               │ HTTPS / API
+                               ▼
+                    ┌─────────────────────┐
+                    │   Node.js Backend   │
+                    │ Express + TypeScript│
+                    └──────────┬──────────┘
+                               │
+              ┌────────────────┼────────────────┐
+              │                │                │
+              ▼                ▼                ▼
+       ┌────────────┐   ┌────────────┐  ┌────────────┐
+       │  MongoDB   │   │  Firebase  │  │   External │
+       │  Database  │   │ Auth/Store │  │  Services  │
+       └────────────┘   └────────────┘  └────────────┘
+```
+
+## Backend
+
+Use:
+
+* Node.js
+* Express.js
+* TypeScript
+* Mongoose
+* MongoDB Atlas
+* Firebase Admin SDK
+* Zod
+* JWT/Firebase ID token verification
+* Helmet
+* CORS
+* Rate limiting
+* Pino/Winston logging
+
+## Database
+
+Use:
+
+* MongoDB Atlas
+* Mongoose
+* MongoDB transactions/session support
+* Compound indexes
+* Schema validation
+* Decimal128 or integer minor units for financial values
+
+## Authentication
+
+Use:
+
+**Firebase Authentication**
+
+Support:
+
+* Email/password
+* Email verification
+* Password reset
+* MFA where supported/configured
+* Session management
+* Login history
+* Device management
+
+The backend MUST verify Firebase ID tokens using the Firebase Admin SDK.
+
+Never trust authentication state supplied only by the frontend.
+
+## File Storage
+
+Use:
+
+**Firebase Cloud Storage**
+
+Store:
+
+```text
+kyc-documents
+loan-documents
+statements
+receipts
+profile-images
+support-attachments
+```
+
+Private financial/KYC documents must never be publicly accessible.
+
+## Realtime
+
+Use Firebase/Firestore realtime capabilities where appropriate for:
+
+* Notifications
+* Support messages
+* Security alerts
+* Transaction status updates
+* Admin alerts
+
+Financial writes must still be controlled by the Node.js backend.
+
+## AI Coding Agent
+
+You are operating as **Claude Code**.
+
+Do not treat Claude as a runtime backend dependency.
+
+Claude is responsible for:
+
+* Repository inspection
+* Architecture
+* Code generation
+* Refactoring
+* Testing
+* Debugging
+* Documentation
+* Security review
+* Running commands
+* Fixing errors
+
+Do NOT add Claude API calls to the production application unless a specific AI feature is explicitly required.
+
+---
+
+# 2. ABSOLUTELY DO NOT USE APPWRITE
+
+The previous architecture used Appwrite.
+
+That architecture is now replaced.
+
+DO NOT use:
+
+* Appwrite
+* Appwrite Auth
+* Appwrite Database
+* Appwrite TablesDB
+* Appwrite Functions
+* Appwrite Storage
+* Appwrite Realtime
+* Appwrite Messaging
+
+Replace all Appwrite functionality with the new architecture:
+
+```text
+Authentication → Firebase Authentication
+
+Database → MongoDB Atlas + Mongoose
+
+Backend business logic → Node.js + Express
+
+File storage → Firebase Cloud Storage
+
+Realtime → Firebase/Firestore realtime services
+
+Push notifications → Firebase Cloud Messaging
+
+Scheduled jobs → Node.js worker / cron / scheduler
+
+Financial transactions → MongoDB transactions
+```
+
+Never create an Appwrite dependency.
+
+---
+
+# 3. PROJECT OBJECTIVE
+
+Create:
+
+**BankSphere**
+
+A modern digital banking management platform.
+
+The application must provide:
+
+### Customer portal
+
+* Registration
+* Login
+* MFA
+* KYC
+* Accounts
+* Deposits
+* Withdrawals
+* Transfers
+* Beneficiaries
+* Fixed deposits
+* Loans
+* Cards
+* Statements
+* Notifications
+* Support
+* Security center
+
+### Staff/Admin portal
+
+* Customers
+* Accounts
+* Transactions
+* Transfers
+* Deposits
+* Withdrawals
+* KYC
+* Loans
+* Fixed deposits
+* Cards
+* Fraud/risk
+* Branches
+* Employees
+* Support
+* Reports
+* Audit logs
+* System settings
+
+---
+
+# 4. MOST IMPORTANT SECURITY RULE
+
+This is a banking application.
+
+The frontend must NEVER directly modify:
+
+```text
+account balance
+available balance
+transaction status
+ledger entries
+loan approval state
+account freeze state
+fraud risk score
+audit records
+administrative permissions
+financial configuration
+```
+
+The browser can only submit business requests.
+
+Correct architecture:
+
+```text
+Browser
+   ↓
+Firebase authenticated user
+   ↓
+Firebase ID token
+   ↓
+Node.js API
+   ↓
+Verify Firebase token
+   ↓
+Authorization
+   ↓
+Zod validation
+   ↓
+Business validation
+   ↓
+Fraud/risk validation
+   ↓
+Balance validation
+   ↓
+Idempotency validation
+   ↓
+MongoDB transaction/session
+   ↓
+Ledger entries
+   ↓
+Account state update
+   ↓
+Commit
+   ↓
+Audit log
+   ↓
+Notification
+   ↓
+Response
+```
+
+Never bypass this architecture.
+
+---
+
+# 5. USER ROLES
+
+Implement:
+
+```text
+CUSTOMER
+TELLER
+CUSTOMER_SERVICE
+LOAN_OFFICER
+COMPLIANCE_OFFICER
+BRANCH_MANAGER
+ADMIN
+SUPER_ADMIN
+```
+
+Authorization must be enforced by the backend.
+
+Never rely on:
+
+```text
+hidden buttons
+frontend route guards
+React state
+client-side role checks
+```
+
+Frontend checks are UX only.
+
+Backend authorization is mandatory.
+
+---
+
+# 6. CUSTOMER FEATURES
+
+Implement all major features from the original BankSphere specification.
+
+## Authentication
+
+Use Firebase Authentication.
+
+Features:
+
+```text
+Register
+Login
+Logout
+Email verification
+Forgot password
+Password reset
+MFA
+Session management
+Login history
+Security settings
+Device/session management
+```
+
+Backend flow:
+
+```text
+Firebase login
+      ↓
+Firebase ID token
+      ↓
+Node API
+      ↓
+Firebase Admin verifyIdToken()
+      ↓
+Load user profile from MongoDB
+      ↓
+Authorization
+```
+
+---
+
+# 7. CUSTOMER PROFILE
+
+MongoDB collection:
+
+```text
+customers
+```
+
+Fields:
+
+```typescript
+{
+  _id,
+  firebaseUid,
+  customerNumber,
+  fullName,
+  email,
+  phone,
+  dateOfBirth,
+  address,
+  profileImageUrl,
+  kycStatus,
+  branchId,
+  riskLevel,
+  status,
+  createdAt,
+  updatedAt
+}
+```
+
+Never use the Firebase UID as the public customer number.
+
+---
+
+# 8. CUSTOMER DASHBOARD
+
+Display:
+
+```text
+Total Balance
+Available Balance
+Pending Amount
+Savings
+Monthly Income
+Monthly Expenses
+Recent Transactions
+Spending Chart
+Income Chart
+Notifications
+Security Alerts
+Quick Actions
+```
+
+Quick actions:
+
+```text
+Transfer
+Deposit
+Withdraw
+Statement
+Loan
+Fixed Deposit
+```
+
+All displayed financial values must come from the backend.
+
+Never hardcode:
+
+```text
+balance: 100000
+```
+
+inside React components.
+
+---
+
+# 9. BANK ACCOUNT SYSTEM
+
+MongoDB collection:
+
+```text
+accounts
+```
+
+Support:
+
+```text
+SAVINGS
+CURRENT
+FIXED_DEPOSIT
+```
+
+Account fields:
+
+```typescript
+{
+  _id,
+  accountNumber,
+  customerId,
+  accountType,
+  currency,
+  balanceMinorUnits,
+  availableBalanceMinorUnits,
+  blockedAmountMinorUnits,
+  interestRate,
+  status,
+  branchId,
+  openedAt,
+  closedAt,
+  createdAt,
+  updatedAt
+}
+```
+
+Statuses:
+
+```text
+PENDING
+ACTIVE
+DORMANT
+FROZEN
+SUSPENDED
+CLOSED
+```
+
+Generate unique human-readable account numbers.
+
+Never expose MongoDB internal IDs as account numbers.
+
+---
+
+# 10. DOUBLE-ENTRY LEDGER
+
+This is mandatory.
+
+MongoDB collection:
+
+```text
+ledgerEntries
+```
+
+Fields:
+
+```typescript
+{
+  _id,
+  transactionId,
+  accountId,
+  entryType,
+  debitMinorUnits,
+  creditMinorUnits,
+  balanceBeforeMinorUnits,
+  balanceAfterMinorUnits,
+  currency,
+  description,
+  createdAt
+}
+```
+
+Every financial transaction must satisfy:
+
+```text
+total debit == total credit
+```
+
+Ledger records are immutable.
+
+Never edit historical ledger entries.
+
+Corrections must happen through compensating transactions.
+
+---
+
+# 11. TRANSACTION SYSTEM
+
+MongoDB collection:
+
+```text
+transactions
+```
+
+Types:
+
+```text
+DEPOSIT
+WITHDRAWAL
+TRANSFER
+PAYMENT
+REFUND
+INTEREST
+FEE
+LOAN_DISBURSEMENT
+LOAN_REPAYMENT
+CARD_PAYMENT
+CARD_REFUND
+ADJUSTMENT
+```
+
+Statuses:
+
+```text
+PENDING
+PROCESSING
+COMPLETED
+FAILED
+REVERSED
+CANCELLED
+```
+
+Fields:
+
+```typescript
+{
+  _id,
+  transactionNumber,
+  type,
+  sourceAccountId,
+  destinationAccountId,
+  amountMinorUnits,
+  feeMinorUnits,
+  currency,
+  description,
+  reference,
+  status,
+  riskScore,
+  initiatedBy,
+  approvedBy,
+  idempotencyKey,
+  reversalOfTransactionId,
+  createdAt,
+  completedAt,
+  failureReason
+}
+```
+
+---
+
+# 12. TRANSFER ENGINE
+
+Create:
+
+```text
+POST /api/v1/transfers
+```
+
+Backend service:
+
+```text
+transferService
+```
+
+Flow:
+
+```text
+Authenticate
+↓
+Authorize
+↓
+Validate source account
+↓
+Validate ownership
+↓
+Validate destination
+↓
+Validate amount
+↓
+Validate currency
+↓
+Validate account status
+↓
+Check balance
+↓
+Check limits
+↓
+Calculate fees
+↓
+Check idempotency
+↓
+Run fraud checks
+↓
+Start MongoDB transaction
+↓
+Create transaction
+↓
+Create debit ledger
+↓
+Create credit ledger
+↓
+Update source account
+↓
+Update destination account
+↓
+Commit MongoDB transaction
+↓
+Create audit log
+↓
+Send notification
+↓
+Return result
+```
+
+Use MongoDB:
+
+```text
+session.withTransaction()
+```
+
+or the appropriate Mongoose transaction API.
+
+Never perform:
+
+```typescript
+account.balance -= amount;
+destination.balance += amount;
+```
+
+without transactional protection.
+
+---
+
+# 13. IDEMPOTENCY
+
+Every money-moving request requires:
+
+```text
+idempotencyKey
+```
+
+Store a unique index.
+
+Example:
+
+```text
+Request A → transaction created
+Request A repeated → original transaction returned
+```
+
+Never create duplicate financial transactions.
+
+MongoDB must enforce uniqueness at the database level.
+
+---
+
+# 14. CONCURRENCY SAFETY
+
+Implement MongoDB transaction/session protection.
+
+Required test:
+
+```text
+Starting balance = 10,000
+
+Transfer A = 8,000
+Transfer B = 8,000
+
+Both execute simultaneously.
+```
+
+Expected:
+
+```text
+Exactly one succeeds.
+
+The second fails because of:
+
+INSUFFICIENT_BALANCE
+
+or
+
+TRANSACTION_CONFLICT
+```
+
+The account must never become negative.
+
+---
+
+# 15. DEPOSIT
+
+Create:
+
+```text
+POST /api/v1/deposits
+```
+
+For MVP:
+
+Deposits are simulated.
+
+Clearly label them:
+
+```text
+DEMO / SIMULATED
+```
+
+Never claim connection to a real banking network.
+
+Flow:
+
+```text
+Request
+↓
+Validation
+↓
+Authorization
+↓
+MongoDB transaction
+↓
+Transaction
+↓
+Ledger
+↓
+Balance update
+↓
+Audit
+↓
+Notification
+```
+
+---
+
+# 16. WITHDRAWAL
+
+Create:
+
+```text
+POST /api/v1/withdrawals
+```
+
+Validate:
+
+```text
+Account
+Balance
+Daily limit
+Account status
+Authorization
+Risk rules
+```
+
+Execute through MongoDB transaction.
+
+---
+
+# 17. BENEFICIARIES
+
+Collection:
+
+```text
+beneficiaries
+```
+
+Fields:
+
+```typescript
+{
+  _id,
+  customerId,
+  name,
+  bankName,
+  accountNumber,
+  routingNumber,
+  nickname,
+  status,
+  verifiedAt,
+  cooldownUntil,
+  createdAt,
+  updatedAt
+}
+```
+
+Require verification.
+
+Implement configurable cooldown.
+
+---
+
+# 18. FIXED DEPOSITS
+
+Collection:
+
+```text
+fixedDeposits
+```
+
+Fields:
+
+```text
+customerId
+depositAmountMinorUnits
+interestRate
+tenureMonths
+startDate
+maturityDate
+maturityAmountMinorUnits
+status
+```
+
+Statuses:
+
+```text
+ACTIVE
+MATURED
+CLOSED
+PREMATURE_CLOSED
+```
+
+Create backend services:
+
+```text
+createFD
+calculateFDMaturity
+matureFD
+closeFD
+```
+
+---
+
+# 19. LOAN MANAGEMENT
+
+Collections:
+
+```text
+loans
+loanSchedules
+```
+
+Loan types:
+
+```text
+PERSONAL
+HOME
+EDUCATION
+BUSINESS
+EMERGENCY
+```
+
+Workflow:
+
+```text
+APPLIED
+DOCUMENT_REVIEW
+CREDIT_REVIEW
+APPROVED
+REJECTED
+AGREEMENT
+DISBURSED
+REPAYMENT
+CLOSED
+```
+
+Implement:
+
+* Loan calculator
+* EMI
+* Application
+* Document upload
+* Review
+* Approval
+* Rejection
+* Disbursement
+* EMI schedule
+* Repayment
+* Overdue detection
+
+---
+
+# 20. FINANCIAL PRECISION
+
+Never use JavaScript floating point arithmetic for money.
+
+Preferred:
+
+```text
+amountMinorUnits: integer
+```
+
+Example:
+
+```text
+৳100.50
+=
+10050 minor units
+```
+
+Default:
+
+```text
+currency = BDT
+symbol = ৳
+locale = en-BD
+timezone = Asia/Dhaka
+```
+
+Schema must support future currencies.
+
+---
+
+# 21. CARD SYSTEM
+
+Implement mock card management.
+
+Do NOT implement real card processing.
+
+Fields:
+
+```text
+customerId
+accountId
+cardType
+maskedNumber
+expiryMonth
+expiryYear
+status
+dailyLimitMinorUnits
+monthlyLimitMinorUnits
+createdAt
+updatedAt
+```
+
+Never store:
+
+```text
+CVV
+real PIN
+full production card credentials
+```
+
+---
+
+# 22. FRAUD/RISK ENGINE
+
+Create:
+
+```text
+riskService
+```
+
+Inputs:
+
+```text
+amount
+transactionFrequency
+beneficiaryAge
+accountAge
+failedLoginCount
+newDevice
+transactionPattern
+ipAddress
+```
+
+Levels:
+
+```text
+LOW
+MEDIUM
+HIGH
+CRITICAL
+```
+
+Example:
+
+```text
+large transfer → HIGH
+
+new beneficiary + large transfer → HIGH
+
+rapid transfers → MEDIUM/HIGH
+
+suspicious pattern → REVIEW
+```
+
+This is an application-level risk engine.
+
+Do NOT claim it is a complete AML system.
+
+---
+
+# 23. AUDIT LOGGING
+
+MongoDB collection:
+
+```text
+auditLogs
+```
+
+Every sensitive action must create an audit record.
+
+Fields:
+
+```typescript
+{
+  _id,
+  actorUserId,
+  actorRole,
+  action,
+  resourceType,
+  resourceId,
+  oldData,
+  newData,
+  reason,
+  ipAddress,
+  userAgent,
+  timestamp
+}
+```
+
+Audit logs must be append-only from the application perspective.
+
+Events include:
+
+```text
+LOGIN
+LOGOUT
+PASSWORD_CHANGED
+MFA_CHANGED
+KYC_APPROVED
+KYC_REJECTED
+ACCOUNT_CREATED
+ACCOUNT_FROZEN
+TRANSFER_CREATED
+TRANSFER_COMPLETED
+TRANSFER_REVERSED
+LOAN_APPROVED
+LOAN_REJECTED
+ROLE_CHANGED
+BALANCE_ADJUSTED
+```
+
+---
+
+# 24. MAKER-CHECKER APPROVAL
+
+Implement approval workflows.
+
+Example:
+
+```text
+Employee
+   ↓
+Create request
+   ↓
+PENDING_APPROVAL
+   ↓
+Authorized approver
+   ↓
+APPROVED
+   ↓
+Backend executes
+```
+
+Use for:
+
+* Large transfers
+* Manual balance adjustments
+* Account closure
+* Loan approval
+* High-risk KYC
+* Customer suspension
+
+The creator cannot approve their own request.
+
+---
+
+# 25. BALANCE ADJUSTMENT
+
+Never allow an administrator to directly replace a balance.
+
+Correct:
+
+```text
+Adjustment request
+↓
+Reason required
+↓
+Approval
+↓
+Compensating ledger transaction
+↓
+Balance update
+↓
+Audit
+```
+
+---
+
+# 26. KYC
+
+Collection:
+
+```text
+kycRecords
+kycDocuments
+```
+
+Statuses:
+
+```text
+PENDING
+DOCUMENT_SUBMITTED
+UNDER_REVIEW
+APPROVED
+REJECTED
+RESUBMISSION_REQUIRED
+```
+
+Store private documents in Firebase Cloud Storage.
+
+Use secure backend-generated access where required.
+
+Customer A must never access Customer B's documents.
+
+Test this explicitly.
+
+---
+
+# 27. FIREBASE STORAGE SECURITY
+
+Storage structure:
+
+```text
+/users/{uid}/profile
+/users/{uid}/kyc
+/users/{uid}/loans
+/users/{uid}/statements
+/users/{uid}/receipts
+/users/{uid}/support
+```
+
+Use Firebase Storage security rules.
+
+Private files must require authentication and ownership/role authorization.
+
+Never expose permanent public URLs for sensitive documents.
+
+---
+
+# 28. FIREBASE NOTIFICATIONS
+
+Use Firebase Cloud Messaging where appropriate.
+
+Notification types:
+
+```text
+TRANSACTION
+SECURITY
+LOAN
+FD
+KYC
+SUPPORT
+SYSTEM
+```
+
+Channels:
+
+```text
+IN_APP
+PUSH
+EMAIL
+SMS
+```
+
+Use reusable notification services.
+
+---
+
+# 29. REALTIME UPDATES
+
+Use Firebase realtime functionality where useful.
+
+Support:
+
+```text
+Transaction status
+Notifications
+Support messages
+Security alerts
+Loan status
+Admin alerts
+```
+
+Do not use realtime listeners as a replacement for backend authorization.
+
+All financial mutations still go through the Node.js API.
+
+---
+
+# 30. SUPPORT SYSTEM
+
+Collections:
+
+```text
+supportTickets
+ticketMessages
+```
+
+Categories:
+
+```text
+ACCOUNT
+TRANSACTION
+CARD
+LOAN
+KYC
+TECHNICAL
+FRAUD
+OTHER
+```
+
+Statuses:
+
+```text
+OPEN
+IN_PROGRESS
+WAITING_CUSTOMER
+RESOLVED
+CLOSED
+```
+
+Features:
+
+* Create ticket
+* Reply
+* Attach files
+* Assign staff
+* Priority
+* Internal notes
+* Status history
+* Realtime messaging
+
+---
+
+# 31. STATEMENTS
+
+Create backend endpoints:
+
+```text
+GET /api/v1/statements
+POST /api/v1/statements/generate
+```
+
+Generate:
+
+```text
+Monthly statement
+Date-range statement
+Annual statement
+Loan statement
+```
+
+Formats:
+
+```text
+PDF
+CSV
+```
+
+Store generated PDFs securely in Firebase Storage.
+
+---
+
+# 32. REPORTING
+
+Admin reports:
+
+```text
+Daily transaction report
+Monthly transaction report
+Deposit report
+Withdrawal report
+Loan report
+FD report
+Branch report
+Fee report
+Customer growth report
+Fraud report
+Audit report
+```
+
+Support:
+
+```text
+Filters
+Date ranges
+CSV export
+PDF export
+Pagination
+```
+
+Use MongoDB aggregation pipelines for reporting.
+
+Do not load thousands of records into the browser.
+
+---
+
+# 33. MONGODB DATABASE
+
+Use MongoDB Atlas.
+
+Create collections:
+
+```text
+customers
+employees
+branches
+accounts
+beneficiaries
+transactions
+ledgerEntries
+transactionLimits
+transactionFees
+kycRecords
+kycDocuments
+fixedDeposits
+loans
+loanSchedules
+cards
+cardTransactions
+notifications
+supportTickets
+ticketMessages
+auditLogs
+securityEvents
+systemSettings
+bankingProducts
+approvalRequests
+loginHistory
+userDevices
+```
+
+Use Mongoose schemas.
+
+Create appropriate indexes.
+
+Important indexes include:
+
+```text
+customers.firebaseUid
+customers.customerNumber
+
+accounts.accountNumber
+accounts.customerId
+
+transactions.transactionNumber
+transactions.sourceAccountId
+transactions.destinationAccountId
+transactions.status
+transactions.createdAt
+transactions.idempotencyKey
+
+ledgerEntries.transactionId
+ledgerEntries.accountId
+
+loans.customerId
+loans.status
+
+auditLogs.actorUserId
+auditLogs.createdAt
+
+beneficiaries.customerId
+```
+
+Use compound indexes where appropriate.
+
+---
+
+# 34. MONGODB TRANSACTION RULES
+
+All money-moving operations must use MongoDB transactions.
+
+For example:
+
+```typescript
+const session = await mongoose.startSession();
+
+try {
+  await session.withTransaction(async () => {
+    // create transaction
+    // create ledger entries
+    // update account balances
+    // create audit event
+  });
+} finally {
+  await session.endSession();
+}
+```
+
+Never update financial state outside transactional protection.
+
+---
+
+# 35. BACKEND API STRUCTURE
+
+Use:
+
+```text
+/api/v1/auth
+/api/v1/customers
+/api/v1/accounts
+/api/v1/transactions
+/api/v1/transfers
+/api/v1/deposits
+/api/v1/withdrawals
+/api/v1/beneficiaries
+/api/v1/fixed-deposits
+/api/v1/loans
+/api/v1/cards
+/api/v1/kyc
+/api/v1/notifications
+/api/v1/support
+/api/v1/statements
+/api/v1/reports
+/api/v1/admin
+```
+
+Architecture:
+
+```text
+routes
+controllers
+services
+repositories
+models
+schemas
+middleware
+utils
+config
+jobs
+```
+
+Do not put all backend logic in one file.
+
+---
+
+# 36. BACKEND MIDDLEWARE
+
+Implement:
+
+```text
+authenticateFirebaseUser()
+requireRole()
+requirePermission()
+requireCustomerOwnership()
+validateRequest()
+rateLimit()
+errorHandler()
+requestLogger()
+auditMiddleware()
+```
+
+Authorization must happen server-side.
+
+---
+
+# 37. ERROR SYSTEM
+
+Use standardized errors:
+
+```text
+UNAUTHORIZED
+FORBIDDEN
+VALIDATION_ERROR
+ACCOUNT_NOT_FOUND
+ACCOUNT_FROZEN
+ACCOUNT_CLOSED
+INSUFFICIENT_BALANCE
+LIMIT_EXCEEDED
+INVALID_BENEFICIARY
+DUPLICATE_REQUEST
+TRANSACTION_CONFLICT
+TRANSACTION_FAILED
+MFA_REQUIRED
+KYC_REQUIRED
+LOAN_NOT_ELIGIBLE
+```
+
+Never expose:
+
+```text
+stack traces
+database errors
+internal secrets
+Firebase credentials
+MongoDB connection strings
+```
+
+to users.
+
+---
+
+# 38. ADMIN FEATURES
+
+Create a protected admin application.
+
+Routes:
+
+```text
+/admin
+/admin/customers
+/admin/customers/[id]
+/admin/accounts
+/admin/transactions
+/admin/transfers
+/admin/deposits
+/admin/withdrawals
+/admin/kyc
+/admin/loans
+/admin/cards
+/admin/fixed-deposits
+/admin/fraud
+/admin/branches
+/admin/employees
+/admin/support
+/admin/reports
+/admin/audit-logs
+/admin/settings
+```
+
+---
+
+# 39. ADMIN DASHBOARD
+
+Display:
+
+```text
+Total customers
+Active accounts
+New customers
+Today's transactions
+Today's deposits
+Today's withdrawals
+Pending KYC
+Pending approvals
+Loan portfolio
+High-risk transactions
+Failed transactions
+Frozen accounts
+```
+
+Charts:
+
+```text
+Transaction volume
+Deposits vs withdrawals
+Customer growth
+Loan growth
+Revenue/fees
+Branch performance
+```
+
+Use date filtering.
+
+---
+
+# 40. CUSTOMER MANAGEMENT
+
+Admin can:
+
+```text
+Search customers
+Filter customers
+View profile
+View accounts
+View transactions
+View KYC
+View loans
+View cards
+View tickets
+Freeze customer
+Suspend customer
+Activate customer
+Add notes
+View audit history
+```
+
+Normal employees must not perform super-admin operations.
+
+---
+
+# 41. EMPLOYEE MANAGEMENT
+
+Fields:
+
+```text
+userId
+employeeNumber
+fullName
+email
+phone
+role
+department
+branchId
+status
+createdAt
+updatedAt
+```
+
+Admin can:
+
+```text
+Create employee
+Disable employee
+Change role
+Assign branch
+Reset access
+Review activity
+```
+
+Role changes create audit records.
+
+Firebase Authentication controls identity.
+
+MongoDB controls application profile/role metadata.
+
+---
+
+# 42. FRONTEND TECHNOLOGY
+
+Use:
+
+```text
+Next.js
+App Router
+React
+TypeScript
+Tailwind CSS
+shadcn/ui
+Lucide Icons
+Framer Motion
+React Hook Form
+Zod
+TanStack Query
+Recharts
+```
+
+Use Firebase client SDK only where appropriate.
+
+Do not place Firebase Admin credentials in frontend code.
+
+---
+
+# 43. FRONTEND ARCHITECTURE
+
+Use:
+
+```text
+src/
+  app/
+  components/
+  features/
+  hooks/
+  lib/
+  services/
+  schemas/
+  types/
+  utils/
+```
+
+Domain organization:
+
+```text
+auth
+accounts
+transactions
+ledger
+beneficiaries
+kyc
+loans
+cards
+fixed-deposits
+notifications
+support
+fraud
+audit
+reports
+```
+
+---
+
+# 44. FRONTEND COMPONENTS
+
+Create reusable components:
+
+```text
+AppShell
+Sidebar
+Topbar
+UserMenu
+NotificationMenu
+AccountCard
+BalanceCard
+TransactionTable
+TransactionStatus
+MoneyInput
+TransferForm
+BeneficiaryForm
+LoanCard
+LoanCalculator
+LoanSchedule
+KycStatus
+FileUploader
+StatementTable
+DataTable
+SearchFilters
+Pagination
+ConfirmDialog
+ApprovalDialog
+RiskBadge
+AuditTimeline
+EmptyState
+LoadingState
+ErrorState
+```
+
+Use composition.
+
+Avoid giant components.
+
+---
+
+# 45. FORM VALIDATION
+
+Every form uses:
+
+```text
+React Hook Form
++
+Zod
+```
+
+Validate on:
+
+```text
+Frontend
+Backend
+```
+
+Frontend validation is never a security boundary.
+
+---
+
+# 46. DATA FETCHING
+
+Use TanStack Query.
+
+Implement:
+
+```text
+query keys
+caching
+invalidation
+loading states
+error states
+pagination
+```
+
+Do not perform unsafe optimistic updates for financial operations.
+
+After a financial mutation:
+
+```text
+Backend confirms transaction
+↓
+Invalidate/refetch account
+↓
+Update transaction history
+↓
+Display receipt
+```
+
+---
+
+# 47. UI DESIGN
+
+Create a premium banking experience.
+
+Visual characteristics:
+
+```text
+Trustworthy
+Modern
+Minimal
+Professional
+Secure
+Accessible
+Fintech
+```
+
+Do not make it look like a generic admin dashboard.
+
+Customer:
+
+```text
+mobile-first
+```
+
+Admin:
+
+```text
+desktop-first
+```
+
+Both must support:
+
+```text
+mobile
+tablet
+desktop
+```
+
+Target:
+
+```text
+WCAG 2.2 AA
+```
+
+---
+
+# 48. SECURITY CENTER
+
+Create:
+
+```text
+/security
+```
+
+Show:
+
+```text
+MFA status
+Password last changed
+Active sessions
+Recent logins
+Trusted devices
+Security alerts
+```
+
+Actions:
+
+```text
+Change password
+Enable MFA
+Disable MFA
+Revoke session
+Logout all sessions
+Revoke device
+```
+
+---
+
+# 49. LOGIN HISTORY
+
+MongoDB collection:
+
+```text
+loginHistory
+```
+
+Track:
+
+```text
+timestamp
+IP
+userAgent
+device
+success
+failureReason
+```
+
+Do not store unnecessary sensitive information.
+
+---
+
+# 50. USER DEVICES
+
+MongoDB collection:
+
+```text
+userDevices
+```
+
+Fields:
+
+```text
+deviceId
+userId
+deviceName
+platform
+lastSeenAt
+trusted
+createdAt
+```
+
+Users can revoke devices.
+
+---
+
+# 51. ENVIRONMENT VARIABLES
+
+Create:
+
+```env
+# Frontend
+NEXT_PUBLIC_FIREBASE_API_KEY=
+NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN=
+NEXT_PUBLIC_FIREBASE_PROJECT_ID=
+NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET=
+NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID=
+NEXT_PUBLIC_FIREBASE_APP_ID=
+
+NEXT_PUBLIC_API_URL=
+
+# Backend
+MONGODB_URI=
+
+FIREBASE_PROJECT_ID=
+FIREBASE_CLIENT_EMAIL=
+FIREBASE_PRIVATE_KEY=
+
+JWT_SECRET=
+
+BANK_INTERNAL_SECRET=
+
+NODE_ENV=
+PORT=
+```
+
+Never commit secrets.
+
+Create:
+
+```text
+.env.example
+```
+
+with placeholders only.
+
+Never expose:
+
+```text
+MONGODB_URI
+FIREBASE_PRIVATE_KEY
+JWT_SECRET
+BANK_INTERNAL_SECRET
+```
+
+to the browser.
+
+---
+
+# 52. FIREBASE CONFIGURATION
+
+Create documentation:
+
+```text
+docs/firebase-setup.md
+```
+
+Explain:
+
+1. Create Firebase project
+2. Enable Authentication
+3. Configure email/password
+4. Configure MFA if required
+5. Configure Firebase Storage
+6. Configure Storage security rules
+7. Configure Cloud Messaging
+8. Create Firebase service account
+9. Configure backend Firebase Admin SDK
+10. Configure authorized domains
+11. Configure development/staging/production projects
+
+Never commit Firebase service account JSON.
+
+---
+
+# 53. MONGODB CONFIGURATION
+
+Create:
+
+```text
+docs/mongodb-setup.md
+```
+
+Document:
+
+1. Create MongoDB Atlas project
+2. Create cluster
+3. Create database
+4. Configure network access
+5. Create database user
+6. Configure connection string
+7. Configure indexes
+8. Configure backups
+9. Configure development/staging/production databases
+10. Verify MongoDB transactions are available
+
+Use MongoDB Atlas replica set/transaction-capable deployment.
+
+---
+
+# 54. API DOCUMENTATION
+
+Create:
+
+```text
+docs/api.md
+```
+
+Document:
+
+```text
+Endpoint
+Method
+Authentication
+Authorization
+Request
+Response
+Errors
+Side effects
+Database collections
+Audit events
+```
+
+Generate OpenAPI documentation where practical.
+
+---
+
+# 55. DATABASE SEEDING
+
+Create development-only seed scripts.
+
+Seed:
+
+```text
+Demo customers
+Demo employees
+Demo branches
+Demo accounts
+Demo transactions
+Demo loans
+Demo cards
+Demo notifications
+```
+
+Use fake data only.
+
+Never seed real personal information.
+
+Never execute seed scripts against production automatically.
+
+---
+
+# 56. DEMO ACCOUNTS
+
+Create development-only roles:
+
+```text
+Customer
+Teller
+Loan Officer
+Compliance Officer
+Branch Manager
+Admin
+Super Admin
+```
+
+Authentication should use Firebase.
+
+Document development credentials safely.
+
+Never publish real credentials.
+
+---
+
+# 57. DEV / STAGING / PRODUCTION
+
+Support:
+
+```text
+development
+staging
+production
+```
+
+Use separate:
+
+```text
+Firebase projects
+MongoDB databases/clusters
+environment variables
+storage configurations
+```
+
+Development must never accidentally connect to production.
+
+---
+
+# 58. TESTING
+
+Use:
+
+```text
+Vitest
+React Testing Library
+Playwright
+Supertest
+```
+
+Test:
+
+### Unit
+
+```text
+Money calculations
+Loan EMI
+FD maturity
+Fee calculations
+Risk scoring
+Validation
+Status transitions
+```
+
+### Backend integration
+
+```text
+Firebase authentication
+MongoDB
+Transfer API
+Deposit API
+Withdrawal API
+KYC
+Loans
+```
+
+### E2E
+
+```text
+Registration
+Login
+MFA
+KYC
+Account creation
+Transfer
+Beneficiary
+Statement
+Loan application
+Admin approval
+Account freeze
+```
+
+---
+
+# 59. CRITICAL TESTS
+
+## Concurrency
+
+```text
+Balance = 10,000
+
+Transfer A = 8,000
+Transfer B = 8,000
+
+Execute simultaneously.
+```
+
+Expected:
+
+```text
+One succeeds.
+One fails.
+Balance never becomes negative.
+```
+
+## Duplicate request
+
+Same:
+
+```text
+idempotencyKey
+```
+
+submitted twice.
+
+Expected:
+
+```text
+One transaction
+One ledger result
+Same transaction returned
+```
+
+## Account freeze
+
+After freezing:
+
+```text
+Transfer → fail
+Withdrawal → fail
+Payment → fail
+```
+
+## Authorization
+
+Customer attempting:
+
+```text
+/admin
+```
+
+must be denied.
+
+Customer directly calling admin API must receive:
+
+```text
+FORBIDDEN
+```
+
+Teller attempting role management must receive:
+
+```text
+FORBIDDEN
+```
+
+## File security
+
+Customer A must not access:
+
+```text
+Customer B KYC
+Customer B loan documents
+Customer B statements
+```
+
+---
+
+# 60. PERFORMANCE
+
+Optimize:
+
+```text
+MongoDB indexes
+Database queries
+API response size
+Pagination
+Next.js bundle
+Image loading
+Caching
+Repeated API requests
+```
+
+Never retrieve thousands of transactions at once.
+
+Use pagination.
+
+Use MongoDB aggregation for reports.
+
+---
+
+# 61. LOGGING
+
+Use structured backend logging.
+
+Recommended:
+
+```text
+Pino
+```
+
+Log:
+
+```text
+requestId
+userId
+route
+method
+statusCode
+duration
+errorCode
+timestamp
+```
+
+Never log:
+
+```text
+passwords
+Firebase private keys
+MongoDB URI
+CVV
+PIN
+full authentication tokens
+sensitive KYC documents
+```
+
+---
+
+# 62. RATE LIMITING
+
+Protect sensitive endpoints:
+
+```text
+/login-related APIs
+/transfer
+/withdraw
+/beneficiary
+/password operations
+/MFA operations
+/admin APIs
+```
+
+Use appropriate rate limits.
+
+---
+
+# 63. SECURITY HEADERS
+
+Use:
+
+```text
+Helmet
+CORS
+secure cookies where applicable
+HTTPS
+content security policy where practical
+```
+
+Validate all request payloads.
+
+Sanitize/validate user-controlled data.
+
+---
+
+# 64. TRANSACTION REVERSAL
+
+Never edit a completed transaction.
+
+Use:
+
+```text
+Original transaction
+        ↓
+Reversal transaction
+```
+
+Store:
+
+```text
+reversalOfTransactionId
+```
+
+Create compensating ledger entries.
+
+---
+
+# 65. RECONCILIATION
+
+Create a scheduled reconciliation job.
+
+Verify:
+
+```text
+Ledger totals
+vs
+Account balances
+```
+
+Detect:
+
+```text
+mismatch
+orphan transactions
+missing ledger entries
+duplicate ledger entries
+unbalanced transactions
+```
+
+Create a system alert when a mismatch occurs.
+
+---
+
+# 66. SCHEDULED JOBS
+
+Do not use Appwrite scheduled functions.
+
+Use a Node.js job/scheduler architecture.
+
+Implement jobs for:
+
+```text
+Daily interest
+Loan overdue detection
+FD maturity
+Reconciliation
+Fraud scans
+Statement generation
+Notification cleanup
+```
+
+Use a reliable production scheduler/worker system where appropriate.
+
+Do not rely on an in-process cron for critical production jobs if the deployment architecture can restart instances.
+
+---
+
+# 67. ADMIN SETTINGS
+
+Configurable settings:
+
+```text
+Bank name
+Default currency
+Transfer fee
+Withdrawal fee
+Daily transfer limit
+Daily withdrawal limit
+Minimum balance
+Loan rates
+FD rates
+OTP expiration
+Maintenance mode
+```
+
+Store non-secret configuration in MongoDB.
+
+Secrets must remain environment/deployment secrets.
+
+---
+
+# 68. MAINTENANCE MODE
+
+When enabled:
+
+Customer sees:
+
+```text
+Scheduled maintenance
+```
+
+Authorized administrators remain accessible.
+
+Financial APIs should independently check maintenance state where required.
+
+---
+
+# 69. ERROR UI
+
+Create:
+
+```text
+LoadingState
+ErrorState
+EmptyState
+UnauthorizedState
+ForbiddenState
+MaintenanceState
+```
+
+Every important page must handle:
+
+```text
+loading
+empty
+error
+unauthorized
+forbidden
+```
+
+---
+
+# 70. RECEIPTS
+
+After successful transaction show:
+
+```text
+Transaction successful
+Transaction number
+Amount
+Fee
+From
+To
+Date
+Reference
+```
+
+Actions:
+
+```text
+Download receipt
+View details
+Share
+```
+
+Generate receipts through backend logic.
+
+Store generated receipts securely in Firebase Storage.
+
+---
+
+# 71. PROJECT STRUCTURE
+
+Use:
+
+```text
+banksphere/
+│
+├── frontend/
+│   ├── src/
+│   │   ├── app/
+│   │   ├── components/
+│   │   ├── features/
+│   │   ├── hooks/
+│   │   ├── lib/
+│   │   ├── services/
+│   │   ├── schemas/
+│   │   ├── types/
+│   │   └── utils/
+│   │
+│   ├── public/
+│   ├── package.json
+│   └── next.config.ts
+│
+├── backend/
+│   ├── src/
+│   │   ├── config/
+│   │   ├── controllers/
+│   │   ├── middleware/
+│   │   ├── models/
+│   │   ├── routes/
+│   │   ├── schemas/
+│   │   ├── services/
+│   │   ├── repositories/
+│   │   ├── jobs/
+│   │   ├── utils/
+│   │   ├── types/
+│   │   └── app.ts
+│   │
+│   ├── tests/
+│   └── package.json
+│
+├── docs/
+│   ├── architecture.md
+│   ├── firebase-setup.md
+│   ├── mongodb-setup.md
+│   ├── database.md
+│   ├── security.md
+│   ├── api.md
+│   └── deployment.md
+│
+├── tests/
+│   ├── e2e/
+│   └── integration/
+│
+├── .env.example
+├── .gitignore
+├── README.md
+└── package.json
+```
+
+---
+
+# 72. CODE QUALITY
+
+Follow:
+
+```text
+SOLID
+DRY
+KISS
+strict TypeScript
+small functions
+clear naming
+reusable services
+no unnecessary any
+no dead code
+no duplicated business logic
+```
+
+Do not over-engineer simple UI.
+
+---
+
+# 73. NEVER USE
+
+Do not use:
+
+```text
+TODO
+FIXME
+fake API responses
+hardcoded balances
+hardcoded transaction history
+fake production authentication
+disabled authorization
+security bypasses
+mock backend responses in production path
+```
+
+Development-only mock/seed data is acceptable when explicitly isolated.
+
+---
+
+# 74. BANKING SAFETY
+
+This project is a software prototype.
+
+Do not claim automatic compliance with:
+
+```text
+Bangladesh Bank
+PCI DSS
+AML laws
+KYC regulations
+SOC 2
+ISO 27001
+```
+
+Compliance is deployment-specific work.
+
+Build the architecture so proper compliance controls can later be implemented.
+
+---
+
+# 75. SECURITY PRIORITY
+
+Use this priority:
+
+```text
+1. Financial integrity
+2. Authorization
+3. Authentication
+4. Data privacy
+5. Auditability
+6. Reliability
+7. Performance
+8. UI polish
+```
+
+Never sacrifice financial integrity for UI convenience.
+
+---
+
+# 76. DEVELOPMENT PROCESS
+
+Do NOT generate the entire project in one massive response.
+
+Work incrementally.
+
+Use:
+
+```text
+PHASE 1
+Repository inspection + foundation
+
+PHASE 2
+Next.js frontend architecture
+
+PHASE 3
+Node.js backend architecture
+
+PHASE 4
+MongoDB + Mongoose
+
+PHASE 5
+Firebase Authentication
+
+PHASE 6
+Customer onboarding + profiles
+
+PHASE 7
+Accounts
+
+PHASE 8
+Double-entry ledger
+
+PHASE 9
+Transactions
+
+PHASE 10
+Transfers
+
+PHASE 11
+Admin
+
+PHASE 12
+KYC + Firebase Storage
+
+PHASE 13
+Loans
+
+PHASE 14
+Fixed deposits
+
+PHASE 15
+Cards
+
+PHASE 16
+Fraud/risk
+
+PHASE 17
+Notifications + realtime
+
+PHASE 18
+Support
+
+PHASE 19
+Reports + statements
+
+PHASE 20
+Testing
+
+PHASE 21
+Security hardening
+
+PHASE 22
+Deployment
+```
+
+After every phase:
+
+```text
+1. Implement
+2. Run typecheck
+3. Run lint
+4. Run tests
+5. Fix errors
+6. Review architecture
+7. Update documentation
+8. Continue
+```
+
+Never continue with unresolved build errors unless blocked by external configuration.
+
+---
+
+# 77. CLAUDE CODE BEHAVIOR
+
+Before modifying anything:
+
+```text
+Inspect repository
+Inspect package.json
+Inspect existing files
+Inspect configuration
+Inspect existing architecture
+```
+
+Do not blindly overwrite working code.
+
+Reuse existing code when appropriate.
+
+Do not duplicate components.
+
+Understand the surrounding architecture before changing a file.
+
+---
+
+# 78. COMMAND EXECUTION
+
+Use commands appropriate for the project.
+
+Typical frontend:
+
+```bash
+npm install
+npm run dev
+npm run lint
+npm run typecheck
+npm test
+npm run test:e2e
+npm run build
+```
+
+Typical backend:
+
+```bash
+npm install
+npm run dev
+npm run lint
+npm run typecheck
+npm test
+npm run build
+```
+
+If scripts do not exist, create them.
+
+---
+
+# 79. ERROR HANDLING
+
+When a command fails:
+
+```text
+1. Read the complete error
+2. Identify root cause
+3. Fix root cause
+4. Re-run command
+5. Check for regressions
+6. Continue
+```
+
+Do not hide errors.
+
+Do not mark unfinished functionality as complete.
+
+---
+
+# 80. CHECKPOINT
+
+At the end of every phase internally track:
+
+```text
+Phase:
+Implemented:
+Files changed:
+Tests:
+Known issues:
+Next phase:
+```
+
+Keep checkpoint summaries short.
+
+---
+
+# 81. README
+
+Create an excellent README containing:
+
+```text
+Project overview
+Screenshots
+Technology stack
+Architecture
+Firebase setup
+MongoDB setup
+Environment configuration
+Database setup
+Storage setup
+API documentation
+Local development
+Testing
+Deployment
+Security notes
+Demo accounts
+Project structure
+```
+
+Never put real secrets in README.
+
+---
+
+# 82. FINAL ACCEPTANCE CRITERIA
+
+The application is complete only when:
+
+```text
+[ ] Firebase authentication works
+[ ] MFA works
+[ ] Customer onboarding works
+[ ] KYC works
+[ ] Firebase Storage works securely
+[ ] MongoDB connection works
+[ ] Mongoose schemas work
+[ ] Accounts work
+[ ] Double-entry ledger works
+[ ] Transfers work
+[ ] Deposits work
+[ ] Withdrawals work
+[ ] Beneficiaries work
+[ ] Transaction limits work
+[ ] Idempotency works
+[ ] MongoDB transaction safety works
+[ ] Concurrency safety works
+[ ] Admin dashboard works
+[ ] Employees work
+[ ] Roles work
+[ ] Branches work
+[ ] Loans work
+[ ] Loan schedules work
+[ ] Fixed deposits work
+[ ] Cards work
+[ ] Fraud monitoring works
+[ ] Notifications work
+[ ] Realtime updates work
+[ ] Support tickets work
+[ ] Statements work
+[ ] Reports work
+[ ] Audit logs work
+[ ] Firebase Storage permissions work
+[ ] Backend authorization works
+[ ] Unit tests pass
+[ ] Integration tests pass
+[ ] E2E tests pass
+[ ] Security tests pass
+[ ] Build passes
+[ ] Lint passes
+[ ] TypeScript passes
+[ ] Documentation is complete
+```
+
+---
+
+# 83. FIRST TASK
+
+Do NOT immediately build all banking features.
+
+First inspect the repository.
+
+Then:
+
+```text
+1. Determine whether project is new or existing
+2. Inspect all relevant files
+3. Inspect package.json
+4. Inspect current dependencies
+5. Create architecture
+6. Configure Next.js
+7. Configure TypeScript
+8. Configure Tailwind
+9. Configure shadcn/ui
+10. Configure ESLint/Prettier
+11. Create Node.js/Express backend
+12. Configure MongoDB/Mongoose
+13. Configure Firebase client SDK
+14. Configure Firebase Admin SDK
+15. Create authentication architecture
+16. Create environment validation
+17. Create base database schemas
+18. Create API structure
+19. Create documentation
+20. Run the application
+21. Run lint
+22. Run typecheck
+23. Run tests
+24. Fix all errors
+```
+
+Do not implement advanced financial operations during this first phase.
+
+---
+
+# 84. IMPORTANT FINAL RULE
+
+Build this as a **real software project**, not static UI.
+
+The final system must have:
+
+```text
+real Firebase authentication
+real Firebase Storage
+real MongoDB database
+real Mongoose models
+real Express APIs
+real server-side authorization
+real MongoDB transactions
+real transaction processing
+real immutable ledger records
+real audit logs
+real validation
+real error handling
+real tests
+```
+
+The UI must consume real backend data.
+
+The backend must enforce business rules.
+
+Financial operations must be transaction-safe.
+
+The architecture must be maintainable and extensible.
+
+**Start by inspecting the repository and implementing Phase 1.**
