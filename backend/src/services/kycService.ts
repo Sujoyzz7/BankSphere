@@ -125,7 +125,7 @@ export async function getKycRecords(options: {
     .lean();
 
   return {
-    data,
+    data: data as unknown as IKycRecord[],
     total,
     page,
     totalPages: Math.ceil(total / limit),

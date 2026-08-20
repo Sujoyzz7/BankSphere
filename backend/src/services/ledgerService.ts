@@ -53,7 +53,7 @@ export async function getLedgerEntries(
     .lean();
 
   return {
-    data,
+    data: data as unknown as ILedgerEntry[],
     total,
     page,
     totalPages: Math.ceil(total / limit),
@@ -66,7 +66,8 @@ export async function getLedgerEntries(
 export async function getLedgerEntriesByTransaction(
   transactionId: Types.ObjectId
 ): Promise<ILedgerEntry[]> {
-  return LedgerEntry.find({ transactionId }).sort({ createdAt: 1 }).lean();
+  const entries = await LedgerEntry.find({ transactionId }).sort({ createdAt: 1 }).lean();
+  return entries as unknown as ILedgerEntry[];
 }
 
 /**

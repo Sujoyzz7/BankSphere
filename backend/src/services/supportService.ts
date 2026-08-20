@@ -95,7 +95,7 @@ export async function getAllTickets(options: {
     .lean();
 
   return {
-    data,
+    data: data as unknown as ISupportTicket[],
     total,
     page,
     totalPages: Math.ceil(total / limit),

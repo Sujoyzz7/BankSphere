@@ -238,6 +238,7 @@ export async function executeTransfer(params: TransferParams): Promise<TransferR
     try {
       const sourceAccount = await Account.findById(params.sourceAccountId).lean();
       const destAccount = await Account.findById(params.destinationAccountId).lean();
+      const transferRes = result as TransferResult;
 
       if (sourceAccount) {
         await createNotification({
@@ -245,7 +246,7 @@ export async function executeTransfer(params: TransferParams): Promise<TransferR
           type: 'TRANSACTION',
           title: 'Transfer Sent',
           message: `You sent ${params.amountMinorUnits / 100} BDT to ${destAccount?.accountNumber || 'unknown'}`,
-          data: { transactionId: result.transactionId },
+          data: { transactionId: transferRes.transactionId },
         });
       }
 
@@ -255,7 +256,7 @@ export async function executeTransfer(params: TransferParams): Promise<TransferR
           type: 'TRANSACTION',
           title: 'Transfer Received',
           message: `You received ${params.amountMinorUnits / 100} BDT from ${sourceAccount?.accountNumber || 'unknown'}`,
-          data: { transactionId: result.transactionId },
+          data: { transactionId: transferRes.transactionId },
         });
       }
     } catch (notifError) {

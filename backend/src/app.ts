@@ -58,7 +58,7 @@ async function start() {
       logger.info(`🔗 Health check: http://localhost:${PORT}/health`);
     });
   } catch (error) {
-    logger.error('❌ Failed to start server:', error);
+    logger.error({ err: error }, '❌ Failed to start server:');
     process.exit(1);
   }
 }

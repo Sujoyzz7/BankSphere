@@ -54,7 +54,7 @@ export async function getNotifications(
     .lean();
 
   return {
-    data,
+    data: data as unknown as INotification[],
     total,
     unreadCount,
     page,

@@ -119,12 +119,13 @@ export async function createFixedDeposit(params: CreateFDParams): Promise<IFixed
 
     // Send notification
     try {
+      const fixedDepositId = (fd as any)._id;
       await createNotification({
         userId: params.customerId,
         type: 'FD',
         title: 'Fixed Deposit Created',
         message: `Your fixed deposit of ${params.amountMinorUnits / 100} BDT for ${params.tenureMonths} months has been created`,
-        data: { fixedDepositId: fd._id },
+        data: { fixedDepositId },
       });
     } catch (notifError) {
       logger.error({ err: notifError }, 'Failed to send FD notification');
