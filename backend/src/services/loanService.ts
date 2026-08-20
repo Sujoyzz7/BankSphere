@@ -74,18 +74,19 @@ export async function approveAndDisburse(
       if (!loan) throw new Error('Failed to update loan');
 
       // Create repayment schedule
+      const approvedLoan = loan as any;
       const schedule: any[] = [];
-      for (let i = 1; i <= loan.tenureMonths; i++) {
+      for (let i = 1; i <= approvedLoan.tenureMonths; i++) {
         const dueDate = new Date();
         dueDate.setMonth(dueDate.getMonth() + i);
 
         schedule.push({
-          loanId: loan._id,
+          loanId: approvedLoan._id,
           installmentNumber: i,
           dueDate,
-          principalMinorUnits: Math.round(loan.principalAmountMinorUnits / loan.tenureMonths),
-          interestMinorUnits: Math.round((loan.totalPayableMinorUnits - loan.principalAmountMinorUnits) / loan.tenureMonths),
-          totalMinorUnits: loan.emiAmountMinorUnits,
+          principalMinorUnits: Math.round(approvedLoan.principalAmountMinorUnits / approvedLoan.tenureMonths),
+          interestMinorUnits: Math.round((approvedLoan.totalPayableMinorUnits - approvedLoan.principalAmountMinorUnits) / approvedLoan.tenureMonths),
+          totalMinorUnits: approvedLoan.emiAmountMinorUnits,
           status: 'PENDING',
         });
       }
@@ -93,10 +94,10 @@ export async function approveAndDisburse(
       await LoanSchedule.insertMany(schedule, { session });
 
       // Disburse funds to account
-      const account = await Account.findOne({ _id: loan.accountId }).session(session).lean();
+      const account = await Account.findOne({ _id: approvedLoan.accountId }).session(session).lean();
       if (!account) throw new Error('Account not found');
 
-      const newBalance = account.balanceMinorUnits + loan.principalAmountMinorUnits;
+      const newBalance = account.balanceMinorUnits + approvedLoan.principalAmountMinorUnits;
 
       const transaction = await Transaction.create(
         [
@@ -107,7 +108,7 @@ export async function approveAndDisburse(
             amountMinorUnits: loan.principalAmountMinorUnits,
             feeMinorUnits: 0,
             currency: account.currency,
-            description: `Loan Disbursement - ${loan.loanType}`,
+            description: `Loan Disbursement - ${approvedLoan.loanType}`,
             status: 'COMPLETED',
             completedAt: new Date(),
             initiatedBy: approvedBy,
@@ -148,12 +149,13 @@ export async function approveAndDisburse(
 
     // Send notification
     try {
+      const finalLoan = loan as any;
       await createNotification({
-        userId: loan.customerId,
+        userId: finalLoan.customerId,
         type: 'LOAN',
         title: 'Loan Approved & Disbursed',
-        message: `Your ${loan.loanType} loan of ${loan.principalAmountMinorUnits / 100} BDT has been disbursed`,
-        data: { loanId: loan._id },
+        message: `Your ${finalLoan.loanType} loan of ${finalLoan.principalAmountMinorUnits / 100} BDT has been disbursed`,
+        data: { loanId: finalLoan._id },
       });
     } catch (notifError) {
       logger.error({ err: notifError }, 'Failed to send loan notification');

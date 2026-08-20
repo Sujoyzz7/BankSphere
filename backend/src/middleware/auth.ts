@@ -54,7 +54,7 @@ export async function authenticateFirebaseUser(
     if (error instanceof UnauthorizedError) {
       next(error);
     } else {
-      logger.error('Authentication error:', error);
+      logger.error({ err: error }, 'Authentication error:');
       next(new UnauthorizedError('Authentication failed'));
     }
   }

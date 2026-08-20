@@ -22,7 +22,7 @@ export function initializeFirebase(): admin.app.App {
     logger.info('✅ Firebase Admin SDK initialized');
     return firebaseApp;
   } catch (error) {
-    logger.error('❌ Firebase Admin SDK initialization failed:', error);
+    logger.error({ err: error }, '❌ Firebase Admin SDK initialization failed:');
     process.exit(1);
   }
 }

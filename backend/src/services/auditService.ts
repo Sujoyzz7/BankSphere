@@ -66,7 +66,7 @@ export async function getAuditLogs(filters: {
     .lean();
 
   return {
-    data,
+    data: data as unknown as IAuditLog[],
     total,
     page,
     totalPages: Math.ceil(total / limit),
